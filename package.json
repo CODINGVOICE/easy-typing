@@ -1,6 +1,6 @@
 {
   "name": "pinyin-typing-game",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "electron/main.mjs",
@@ -30,6 +30,7 @@
   "build": {
     "appId": "com.sm2170.pinyintypinggame",
     "productName": "拼音打字乐园",
+    "icon": "public/favicon.png",
     "directories": {
       "output": "release"
     },
