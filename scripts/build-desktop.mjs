@@ -40,6 +40,36 @@ const releaseDir = path.join(projectRoot, "release");
 const targetsWin = rawArgs.includes("--win");
 const dirOnlyBuild = rawArgs.includes("--dir");
 
+function hasMacNotarizationCredentials() {
+  return (
+    Boolean(process.env.APPLE_API_KEY) &&
+    Boolean(process.env.APPLE_API_KEY_ID) &&
+    Boolean(process.env.APPLE_API_ISSUER)
+  ) || (
+    Boolean(process.env.APPLE_ID) &&
+    Boolean(process.env.APPLE_APP_SPECIFIC_PASSWORD)
+  ) || Boolean(process.env.APPLE_KEYCHAIN_PROFILE);
+}
+
+function warnIfMacBuildWillSkipNotarization() {
+  if (!targetsCurrentMac || dirOnlyBuild || hasMacNotarizationCredentials()) {
+    return;
+  }
+
+  console.warn(
+    [
+      "Warning: macOS build will be signed only if a Developer ID certificate is available,",
+      "but notarization credentials were not provided.",
+      "The app may run locally, yet downloads from GitHub Releases can be blocked by Gatekeeper",
+      "with a damaged or unverifiable app message.",
+      "Provide one of the following before building for release:",
+      "APPLE_API_KEY + APPLE_API_KEY_ID + APPLE_API_ISSUER,",
+      "or APPLE_ID + APPLE_APP_SPECIFIC_PASSWORD,",
+      "or APPLE_KEYCHAIN_PROFILE."
+    ].join(" ")
+  );
+}
+
 function getElectronDistOverride() {
   if (targetsCurrentMac && targetsArm64) {
     if (
@@ -208,6 +238,8 @@ const electronDistOverride = getElectronDistOverride();
 if (electronDistOverride && (targetsArm64 || targetsX64)) {
   injectedArgs.push(`-c.electronDist=${electronDistOverride}`);
 }
+
+warnIfMacBuildWillSkipNotarization();
 
 const childArgs = [...injectedArgs, ...rawArgs];
 

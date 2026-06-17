@@ -99,3 +99,42 @@ npm run build:desktop:dir
 ```
 
 打包输出位于 `release/` 目录。桌面壳基于 Electron，直接加载前端 `dist/` 构建产物。`build:desktop:dir` 属于验收用途，不会触发“只保留 `.zip`”的清理逻辑。
+
+### macOS 发布说明
+
+如果 macOS 包在本机能打开，但从 GitHub Release 下载后提示“已损坏，无法打开”，通常是因为产物没有完成面向分发的签名和公证。
+
+项目现在已经内置：
+
+- Hardened Runtime
+- Electron 所需的 macOS entitlements
+- `electron-builder` 的内置 notarization 流程
+
+发布 macOS 包时还需要额外满足两件事：
+
+1. 使用 `Developer ID Application` 证书签名应用。可以放在当前机器钥匙串里，也可以通过 `CSC_LINK` / `CSC_NAME` 提供给 `electron-builder`。
+2. 提供一组 Apple 公证凭据，任选其一：
+
+```bash
+# 推荐：App Store Connect API Key
+export APPLE_API_KEY=/absolute/path/AuthKey_XXXXXX.p8
+export APPLE_API_KEY_ID=XXXXXX
+export APPLE_API_ISSUER=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+# 或者：Apple ID
+export APPLE_ID=you@example.com
+export APPLE_APP_SPECIFIC_PASSWORD=xxxx-xxxx-xxxx-xxxx
+
+# 或者：notarytool keychain profile
+export APPLE_KEYCHAIN_PROFILE=notarytool-profile
+```
+
+然后执行：
+
+```bash
+npm run build:desktop:mac:arm64
+# 或
+npm run build:desktop:mac:x64
+```
+
+如果没有公证凭据，构建仍可能成功，但下载后的应用很容易被 Gatekeeper 拦截。

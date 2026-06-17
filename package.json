@@ -45,7 +45,11 @@
       "target": [
         "zip"
       ],
-      "category": "public.app-category.education"
+      "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
+      "notarize": true
     },
     "win": {
       "artifactName": "${productName}-${version}-win64.${ext}",
