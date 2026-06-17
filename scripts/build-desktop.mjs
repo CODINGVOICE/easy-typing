@@ -38,6 +38,7 @@ const targetsArm64 = rawArgs.includes("--arm64");
 const targetsX64 = rawArgs.includes("--x64");
 const releaseDir = path.join(projectRoot, "release");
 const targetsWin = rawArgs.includes("--win");
+const dirOnlyBuild = rawArgs.includes("--dir");
 
 function getElectronDistOverride() {
   if (targetsCurrentMac && targetsArm64) {
@@ -180,9 +181,27 @@ function createWindowsInstallerZip() {
   }
 }
 
+function removeNonZipReleaseArtifacts() {
+  if (dirOnlyBuild || !fs.existsSync(releaseDir)) {
+    return;
+  }
+
+  for (const entry of fs.readdirSync(releaseDir, { withFileTypes: true })) {
+    const entryPath = path.join(releaseDir, entry.name);
+
+    if (entry.isFile() && entry.name.endsWith(".zip")) {
+      continue;
+    }
+
+    fs.rmSync(entryPath, { recursive: true, force: true });
+  }
+}
+
+
 if (targetsCurrentMac && os.machine() === "arm64" && !explicitArch) {
   injectedArgs.push("--arm64");
 }
+
 
 const electronDistOverride = getElectronDistOverride();
 
@@ -207,6 +226,7 @@ child.on("exit", (code, signal) => {
     try {
       renameReleaseArtifacts();
       createWindowsInstallerZip();
+      removeNonZipReleaseArtifacts();
     } catch (error) {
       console.error(error instanceof Error ? error.message : String(error));
       process.exit(1);

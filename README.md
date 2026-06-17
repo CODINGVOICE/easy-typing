@@ -2,6 +2,24 @@
 
 面向小孩子的 H5 拼音打字练习游戏，使用 TypeScript 实现。
 
+## 运行截图
+
+### 熟悉键盘
+
+![熟悉键盘运行截图](public/keyboard-practice.jpg)
+
+### 打字游戏
+
+![打字游戏运行截图](public/type-game.jpg)
+
+### 简单拼音
+
+![简单拼音运行截图](public/simple-pinyin.jpg)
+
+### 复杂拼音
+
+![复杂拼音运行截图](public/complex-pinyin.jpg)
+
 ## 练习路径
 
 1. 熟悉键盘：默认从字母、数字、符号中随机练习，也可以手动选择手指回家、韵母、声母、数字或符号分类。
@@ -64,7 +82,7 @@ npm run build:desktop
 - macOS AMD64
 - Windows 64-bit
 
-产物都会写入 `release/`，并在文件名中区分平台与架构。
+产物都会写入 `release/`，并在文件名中区分平台与架构；打包结束后只保留 `.zip` 文件，其他安装器、元数据和解包目录会自动清理。
 
 如需单独打包：
 
@@ -80,4 +98,4 @@ npm run build:desktop:win
 npm run build:desktop:dir
 ```
 
-打包输出位于 `release/` 目录。桌面壳基于 Electron，直接加载前端 `dist/` 构建产物。
+打包输出位于 `release/` 目录。桌面壳基于 Electron，直接加载前端 `dist/` 构建产物。`build:desktop:dir` 属于验收用途，不会触发“只保留 `.zip`”的清理逻辑。
